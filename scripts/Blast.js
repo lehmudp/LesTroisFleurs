@@ -1,8 +1,10 @@
 class Blast{
-  constructor(player){
-    this.sprite = Razor.game.add.sprite(player.sprite.x, player.sprite.y, 'blast');
+  constructor(x, y, radius, group, id){
+    this.sprite = group.create(x, y, 'blast');
     Razor.game.physics.arcade.enable(this.sprite);
     this.sprite.anchor.setTo(0.5, 0.5);
+    this.sprite.id = id;
+    this.sprite.scale.setTo(radius, radius);
   }
 
   update(){

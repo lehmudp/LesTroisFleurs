@@ -60,10 +60,15 @@ var create = function(){
     Razor.game.physics.startSystem(Phaser.Physics.ARCADE);
     //=======Create Group Player =====================================
     Razor.playerGroup = Razor.game.add.physicsGroup();
+    Razor.blastGroup = Razor.game.add.physicsGroup();
+    Razor.timewarpGroup = Razor.game.add.physicsGroup();
     Razor.enemies = [];
     //=======Create Item =======================================
     Razor.itemGroup = Razor.game.add.physicsGroup();
     Razor.itemGroup.setAll('lifespan', 2000);
+    //TELEPORT - create portal
+    timewarp = Razor.timewarpGroup.create(948, 2272, 'tp');
+    Razor.game.physics.arcade.enable(timewarp);
 }
 //=Update ======================================================================
 var update = function(){
@@ -76,6 +81,14 @@ var update = function(){
     Razor.playerGroup,
     Razor.itemGroup,
     onDiamond,
+    null,
+    this
+  );
+
+  Razor.game.physics.arcade.overlap(
+    Razor.playerGroup,
+    Razor.timewarpGroup,
+    onPlayerEnterPortal,
     null,
     this
   );
@@ -117,6 +130,36 @@ Razor.onConnected = function(data){
   Razor.game.camera.follow(player.sprite);
   Razor.game.inputController = new InputController(player);
 }
+//==================TELEPORT - Player get teleported when overlap portal
+
+var destinations = [ [661, 500], [3140, 880], [520, 1420], [1720, 2440], [2900, 1800], [1300, 1050], [1900, 150] ];
+var  destination = destinations[Math.floor(Math.random()*destinations.length)];
+var onPlayerEnterPortal = function(playerSprite, timewarpSprite){
+  console.log(playerSprite.position.x);
+  playerSprite.position.x = destination[0];
+  playerSprite.position.y = destination[1];
+}
+
+//=====Kill player====================================
+
+Razor.onBlastOverlapPlayer = function(){
+  Razor.game.physics.arcade.overlap(
+    Razor.blastGroup,
+    Razor.playerGroup,
+    onBlastKillPlayer,
+    null,
+    this
+  );
+}
+
+var onBlastKillPlayer = function(blastSprite, playerSprite){
+  if (playerSprite.id != blastSprite.id){
+    playerSprite.health -= 1;
+  };
+  if (playerSprite.health == 0){
+    playerSprite.kill();
+  };
+}
 
 //Create enemies players from otherPlayer datas=================================
 Razor.onReceivedOtherPlayersData = function(datas){
@@ -143,21 +186,20 @@ Razor.onEnemyMoved = function(data){
 Razor.onEnemyBlastMoved = function(data){
   var enemyBlast = Razor.getPlayerById(data.id);
   enemyBlast.sprite.position = data.position;
-  Razor.createBlast(enemyBlast.sprite.position.x, enemyBlast.sprite.position.y, data.radius);
-
+  Razor.createBlast(enemyBlast.sprite.position.x, enemyBlast.sprite.position.y, data.radius, Razor.blastGroup, data.id);
+  Razor.onBlastOverlapPlayer();
 }
 
-Razor.createBlast = function(positionX, positionY, radius){
-  Razor.blast = Razor.game.add.sprite(positionX, positionY, 'blast');
-  Razor.blast.scale.setTo(radius, radius);
-  Razor.blast.anchor.setTo(0.5, 0.5);
-  Razor.enemyBlasts.push(Razor.blast);
-  console.log(Razor.enemyBlasts);
+Razor.createBlast = function(positionX, positionY, radius, group, id){
+  Razor.blast = new Blast(positionX, positionY, radius, Razor.blastGroup, id)
+  Razor.enemyBlasts.push(Razor.blast.sprite);
   if (Razor.enemyBlasts.length >= 2){
     var enemyBlastToKill = Razor.enemyBlasts.splice(0,1)[0];
     enemyBlastToKill.kill();
   };
 }
+
+
 
 Razor.fire = function(player){
   if (Razor.keyboard.isDown(Phaser.KeyCode.SPACEBAR)){
@@ -167,14 +209,9 @@ Razor.fire = function(player){
       }
       Razor.nextShotAt = Razor.game.time.now + Razor.shotDelay;
       //add blast
-      Razor.blast = Razor.game.add.sprite(player.sprite.x, player.sprite.y, 'blast');
-      Razor.blast.scale.setTo(radius, radius);
-      Razor.blast.anchor.setTo(0.5, 0.5);
-
+      Razor.blast = new Blast(player.sprite.x, player.sprite.y, radius, Razor.blastGroup, player.sprite.id)
+      Razor.blasts.push(Razor.blast.sprite);
       Razor.client.reportBlast(player.sprite.id, player.sprite.position, radius);
-
-
-      Razor.blasts.push(Razor.blast);
       radiuses.push(radius);
       indexBlast += 1;
       radius += radiusAdd;
@@ -183,13 +220,10 @@ Razor.fire = function(player){
 
   if (Razor.blasts.length == 1 && radiuses[indexBlast] < radiusMax){
     //add blast
-    Razor.blast = Razor.game.add.sprite(player.sprite.x, player.sprite.y, 'blast');
-    Razor.blast.scale.setTo(radius, radius);
-    Razor.blast.anchor.setTo(0.5, 0.5);
+    Razor.blast = new Blast(player.sprite.x, player.sprite.y, radius, Razor.blastGroup, player.sprite.id)
+    Razor.blasts.push(Razor.blast.sprite);
 
     Razor.client.reportBlast(player.sprite.id, player.sprite.position, radius);
-
-    Razor.blasts.push(Razor.blast);
     radiuses.push(radius);
     indexBlast += 1;
     if(radiuses[indexBlast] > radiuses[indexBlast - 1]){
@@ -198,15 +232,10 @@ Razor.fire = function(player){
   }
   else if ((Razor.blasts.length == 1) && (radiuses[indexBlast] >= radiusMax)){
     //add blast
-    Razor.blast = Razor.game.add.sprite(player.sprite.x, player.sprite.y, 'blast');
-    Razor.blast.scale.setTo(radius, radius);
-    Razor.blast.anchor.setTo(0.5, 0.5);
-
+    Razor.blast = new Blast(player.sprite.x, player.sprite.y, radius, Razor.blastGroup, player.sprite.id)
+    Razor.blasts.push(Razor.blast.sprite);
     Razor.client.reportBlast(player.sprite.id, player.sprite.position, radius);
-
-    Razor.blasts.push(Razor.blast);
     indexBlast += 1;
-
     radiuses.push(radius);
     radius -= radiusAdd;
   };
@@ -216,6 +245,6 @@ Razor.fire = function(player){
   };
   if (Razor.blasts.length == 1 && radius < radiusAdd){
     Razor.blasts = [];
-    Razor.blast.kill();
+    Razor.blast.sprite.kill();
   };
 }
