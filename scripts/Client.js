@@ -1,9 +1,14 @@
 class Client{
   constructor(username){
+
     this.socket = io();
+    var that = this;
+
+    that.socket.emit('login', username);
 
     this.socket.on('connected', function(msg){
       Razor.onConnected(msg);
+      that.id = msg.id;
     });
 
     this.socket.on('other_players', function(msg){

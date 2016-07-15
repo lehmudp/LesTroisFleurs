@@ -27,8 +27,9 @@ io.on('connection', function(socket){//when a new user connect
   console.log('New User Connected');
 
   socket.emit('other_players', players);//send info of other players to new player
-
+  socket.on('login', function(data){
   var newPlayerInfo = {
+    username : data,
     id : socket.id,
     x : 35,
     y : 2626,
@@ -38,6 +39,7 @@ io.on('connection', function(socket){//when a new user connect
   socket.broadcast.emit('new_player_connected', newPlayerInfo);//send newplayer info to other players
   players.push(newPlayerInfo);//add info to array players
 
+});
   socket.on('player_moved', function(data){
     var playerInfo = getPlayerById(data.id);
     playerInfo.x = data.position.x;

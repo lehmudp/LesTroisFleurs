@@ -1,11 +1,20 @@
 class Player{
-  constructor(x, y, group, id){
+  constructor(x, y, group, id, name){
     this.sprite = group.create(x, y, 'player');
     Razor.game.physics.arcade.enable(this.sprite);
     this.sprite.anchor.set(0.5,0.5);
     this.sprite.body.collideWorldBounds = true;
     this.sprite.health = 50;
     this.sprite.id = id;
+    this.sprite.name = name;
+    var text = new Phaser.Text(this.sprite.game, 0, -25, name, {
+      font: 'bold 11pt Arial',
+      fill : 'white',
+      stroke : 'black',
+      strokeThickness : 3
+    });
+    text.anchor.set(0.5,0.5);
+    this.sprite.addChild(text);
     this.sprite.animations.add('idle', [0, 1, 2], 4, true);
     this.sprite.animations.add('down', [3, 4, 5, 6], 6, true);
     this.sprite.animations.add('left', [7, 8, 9, 10], 6, true);

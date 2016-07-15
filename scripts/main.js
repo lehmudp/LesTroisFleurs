@@ -46,7 +46,6 @@ var preload = function(){
 //=Create ======================================================================
 
 var create = function(){
-    Razor.client = new Client();
     //=======Create MAP ========================================
     Razor.game.add.sprite(0, 0, 'back');
     map = Razor.game.add.tilemap('gamemap', 16, 16);
@@ -69,12 +68,12 @@ var create = function(){
     //TELEPORT - create portal
     timewarp = Razor.timewarpGroup.create(948, 2272, 'tp');
     Razor.game.physics.arcade.enable(timewarp);
-/*
-    var username = prompt("Please enter your name (max 20 chars)", localStorage.getItem('username') || 'Supatank');
-    username = username || 'Supatank';
+
+    var username = prompt("Please enter your name (max 20 chars)", localStorage.getItem('username') || 'La Fleur');
+    username = username || 'La Fleur';
     if(username.length > 20) username = username.substring(0, 19);
     localStorage.setItem('username', username);
-    TankOnline.client = new SocketClient(username);*/
+    Razor.client = new Client(username);
 }
 //=Update ======================================================================
 var update = function(){
@@ -131,7 +130,7 @@ Razor.getPlayerById = function(id){
 */
 
 Razor.onConnected = function(data){
-  player = new Player(data.x, data.y, Razor.playerGroup, data.id);
+  player = new Player(data.x, data.y, Razor.playerGroup, data.id, data.username);
   player.sprite.anchor.setTo(0.5, 0.5);
   Razor.game.camera.follow(player.sprite);
   Razor.game.inputController = new InputController(player);
@@ -179,7 +178,7 @@ Razor.onReceivedOtherPlayersData = function(datas){
 //Create enemies from new Player data ==========================================
 Razor.onReceivedNewPlayerData = function(data){
   Razor.enemies.push(
-    new Player(data.x, data.y, Razor.playerGroup, data.id)
+    new Player(data.x, data.y, Razor.playerGroup, data.id, data.username)
   );
 }
 
