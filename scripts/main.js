@@ -170,7 +170,7 @@ var onBlastKillPlayer = function(blastSprite, playerSprite){
 Razor.onReceivedOtherPlayersData = function(datas){
   for(var i=0;i<datas.length;i++){
     Razor.enemies.push(
-      new Player(datas[i].x, datas[i].y, Razor.playerGroup, datas[i].id)
+      new Player(datas[i].x, datas[i].y, Razor.playerGroup, datas[i].id, datas[i].username)
     );
   };
 }
