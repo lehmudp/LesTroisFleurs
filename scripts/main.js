@@ -69,6 +69,12 @@ var create = function(){
     //TELEPORT - create portal
     timewarp = Razor.timewarpGroup.create(948, 2272, 'tp');
     Razor.game.physics.arcade.enable(timewarp);
+/*
+    var username = prompt("Please enter your name (max 20 chars)", localStorage.getItem('username') || 'Supatank');
+    username = username || 'Supatank';
+    if(username.length > 20) username = username.substring(0, 19);
+    localStorage.setItem('username', username);
+    TankOnline.client = new SocketClient(username);*/
 }
 //=Update ======================================================================
 var update = function(){
@@ -157,7 +163,7 @@ var onBlastKillPlayer = function(blastSprite, playerSprite){
     playerSprite.health -= 1;
   };
   if (playerSprite.health == 0){
-    playerSprite.kill();
+    playerSprite.destroy();
   };
 }
 
@@ -198,7 +204,6 @@ Razor.createBlast = function(positionX, positionY, radius, group, id){
     enemyBlastToKill.kill();
   };
 }
-
 
 
 Razor.fire = function(player){

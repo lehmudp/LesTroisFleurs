@@ -31,7 +31,7 @@ io.on('connection', function(socket){//when a new user connect
   var newPlayerInfo = {
     id : socket.id,
     x : 35,
-    y : 2626
+    y : 2626,
   }
 
   socket.emit('connected', newPlayerInfo);//tell the new player the position

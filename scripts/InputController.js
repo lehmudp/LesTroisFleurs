@@ -15,8 +15,6 @@ class InputController{
       else if (Razor.keyboard.isDown(Phaser.KeyCode.DOWN)) directionY = 1;
       else directionY = 0;
 
-
-
       player.update(directionX, directionY);
       Razor.client.reportMove(player.sprite.id, directionX, directionY, player.sprite.position);
       Razor.fire(player);
