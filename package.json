@@ -1,0 +1,9 @@
+{
+  "name": "Razor-Game",
+  "version": "0.0.1",
+  "description": "Razor for everyone",
+  "dependencies": {
+    "express": "^4.14.0",
+    "socket.io": "^1.4.8"
+  }
+}
