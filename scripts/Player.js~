@@ -48,7 +48,7 @@ class Player{
       this.sprite.body.velocity.y = 0;
       this.sprite.animations.play('idle');
     }
-    var textHealth = new Phaser.Text(this.player.sprite.game, 0, 50, 'Health = ' + health, {
+    var textHealth = new Phaser.Text(player.sprite.game, 0, 50, 'Health = ' + health, {
       font: 'bold 11pt Arial',
       fill : 'white',
       stroke : 'black',
