@@ -15,12 +15,14 @@ http.listen(3333, function(){
 
 //==Working Space ==============================================================
 var players = [];
-var getPlayerById = function(id){
+//=========DISCONNECT=== Remove id from array if user disconnected (killOnSight=true)
+var getPlayerById = function(id, killOnSight){
   for(var i=0;i<players.length;i++){
     if(players[i].id == id){
-      return players[i];
+      return killOnSight ? players.splice(i, 1)[0] : players[i];
     }
   }
+  return null;
 }
 
 io.on('connection', function(socket){//when a new user connect
@@ -33,13 +35,17 @@ io.on('connection', function(socket){//when a new user connect
     id : socket.id,
     x : 35,
     y : 2626,
-  }
+  };
+
+  socket.on('disconnect', function(msg){
+      socket.broadcast.emit('delPlayer', newPlayerInfo);
+  });
 
   socket.emit('connected', newPlayerInfo);//tell the new player the position
   socket.broadcast.emit('new_player_connected', newPlayerInfo);//send newplayer info to other players
   players.push(newPlayerInfo);//add info to array players
 
-});
+  });
   socket.on('player_moved', function(data){
     var playerInfo = getPlayerById(data.id);
     playerInfo.x = data.position.x;
@@ -52,5 +58,13 @@ io.on('connection', function(socket){//when a new user connect
     blastInfo.x = data.position.x;
     blastInfo.y = data.position.y;
     socket.broadcast.emit('enemyBlast_moved', data);
+  });
+
+  //=========DISCONNECT
+  socket.on('disconnect', function(){
+    console.log('user disconnected: ' + socket.id);
+    if(getPlayerById(socket.id, true)){
+      socket.broadcast.emit('playerDisconnected', {id : socket.id});
+    }
   });
 });

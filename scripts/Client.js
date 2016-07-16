@@ -24,14 +24,20 @@ class Client{
     this.socket.on('enemyBlast_moved', function(msg){
       Razor.onEnemyBlastMoved(msg);
     });
+    //=========DISCONNECT
+    this.socket.on('playerDisconnected', function(msg){
+      console.log('Player disconnected: '+ msg.id);
+      Razor.onPlayerDisconnected(msg);
+    });
   }
 
-  reportMove(id, directionX, directionY, position){
+  reportMove(id, directionX, directionY, position, health){
     this.socket.emit('player_moved', {
       id        : id,
       directionX : directionX,
       directionY : directionY,
-      position  : position
+      position  : position,
+      health : health
     });
   }
 

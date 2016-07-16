@@ -69,7 +69,8 @@ var create = function(){
     timewarp = Razor.timewarpGroup.create(948, 2272, 'tp');
     Razor.game.physics.arcade.enable(timewarp);
 
-    var username = prompt("Please enter your name (max 20 chars)", localStorage.getItem('username') || 'La Fleur');
+    var username = prompt("Sau khi đăng nhập bạn sẽ an toàn trong vùng Friendzone. Hãy thoát ngay ra và cân cả bản đồ. Good Luck!",
+    localStorage.getItem('username') || 'La Fleur');
     username = username || 'La Fleur';
     if(username.length > 20) username = username.substring(0, 19);
     localStorage.setItem('username', username);
@@ -115,16 +116,35 @@ var createItem = function(){
     count += 1;
   };
 }
+
+//=========DISCONNECT
+Razor.getPlayerById = function(id, killOnSight){
+  for(var i=0;i<Razor.enemies.length;i++){
+    if(Razor.enemies[i].sprite.id == id){
+      return killOnSight ? Razor.enemies.splice(i, 1)[0] : Razor.enemies[i];
+    }
+  }
+
+  return null;
+}
+//=========DISCONNECT
+Razor.onPlayerDisconnected = function(msg){
+ var enemy = Razor.getPlayerById(msg.id, true);
+ if(!enemy) return;
+
+ enemy.sprite.destroy();
+}
+
 /*
  *  HELPER FUNCTIONS
- */
+
 Razor.getPlayerById = function(id){
   for(var i=0;i<Razor.enemies.length;i++){
     if(Razor.enemies[i].sprite.id == id){
       return Razor.enemies[i];
     }
   }
-}
+} */
 /*
 * GAME EVENTS
 */
@@ -140,7 +160,6 @@ Razor.onConnected = function(data){
 var destinations = [ [661, 500], [3140, 880], [520, 1420], [1720, 2440], [2900, 1800], [1300, 1050], [1900, 150] ];
 var  destination = destinations[Math.floor(Math.random()*destinations.length)];
 var onPlayerEnterPortal = function(playerSprite, timewarpSprite){
-  console.log(playerSprite.position.x);
   playerSprite.position.x = destination[0];
   playerSprite.position.y = destination[1];
 }
@@ -185,7 +204,7 @@ Razor.onReceivedNewPlayerData = function(data){
 Razor.onEnemyMoved = function(data){
   var enemy = Razor.getPlayerById(data.id);
   enemy.sprite.position = data.position;
-  enemy.update(data.directionX, data.directionY);
+  enemy.update(data.directionX, data.directionY, data.health);
 }
 
 Razor.onEnemyBlastMoved = function(data){
@@ -205,20 +224,26 @@ Razor.createBlast = function(positionX, positionY, radius, group, id){
 }
 
 
+
+
 Razor.fire = function(player){
   if (Razor.keyboard.isDown(Phaser.KeyCode.SPACEBAR)){
     if (Razor.blasts.length == 0){
+
       if (Razor.nextShotAt > Razor.game.time.now){
         return;
-      }
+      };
       Razor.nextShotAt = Razor.game.time.now + Razor.shotDelay;
       //add blast
-      Razor.blast = new Blast(player.sprite.x, player.sprite.y, radius, Razor.blastGroup, player.sprite.id)
-      Razor.blasts.push(Razor.blast.sprite);
-      Razor.client.reportBlast(player.sprite.id, player.sprite.position, radius);
-      radiuses.push(radius);
-      indexBlast += 1;
-      radius += radiusAdd;
+      if((player.sprite.x < 1149 && player.sprite.y > 2295) == false){
+        Razor.blast = new Blast(player.sprite.x, player.sprite.y, radius, Razor.blastGroup, player.sprite.id)
+        Razor.blasts.push(Razor.blast.sprite);
+        Razor.client.reportBlast(player.sprite.id, player.sprite.position, radius);
+        console.log(player.sprite.x, player.sprite.y);
+        radiuses.push(radius);
+        indexBlast += 1;
+        radius += radiusAdd;
+      };
     }
   };
 
