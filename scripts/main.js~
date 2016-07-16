@@ -69,7 +69,7 @@ var create = function(){
     timewarp = Razor.timewarpGroup.create(948, 2272, 'tp');
     Razor.game.physics.arcade.enable(timewarp);
 
-    var username = prompt("Sau khi đăng nhập bạn sẽ an toàn trong vùng Friendzone. Hãy thoát ngay ra và cân cả bản đồ. Good Luck! Nhấn SpaceBar để chưởng, sau 4s bạn mới chưởng được phát nữa.",
+    var username = prompt("Sau khi đăng nhập bạn sẽ an toàn trong vùng Friendzone. Hãy thoát ngay ra và cân cả bản đồ. Good Luck!\ Nhấn SpaceBar để chưởng, sau 4s bạn mới chưởng được phát nữa.",
     localStorage.getItem('username') || 'La Fleur');
     username = username || 'La Fleur';
     if(username.length > 20) username = username.substring(0, 19);
