@@ -45,6 +45,7 @@ var preload = function(){
     Razor.game.load.spritesheet('health', 'assets/health.png', 28, 100);
     Razor.game.load.spritesheet('speed', 'assets/speed.png', 28, 100);
     Razor.game.load.spritesheet('damage', 'assets/damage.png', 28, 100);
+
   }
 
 //=Create ======================================================================
@@ -74,12 +75,23 @@ var create = function(){
     Razor.game.physics.arcade.enable(timewarp);
     Razor.music = Razor.game.add.audio('blastSound');
 
-    var username = prompt("Sau khi đăng nhập bạn sẽ an toàn trong vùng Friendzone. Hãy thoát ngay ra và cân cả bản đồ. Good Luck! Nhấn SpaceBar để chưởng, sau 4s bạn mới chưởng được phát nữa.",
+    var username = prompt("Please enter your username. Try to survive and good luck!!!",
     localStorage.getItem('username') || 'La Fleur');
     username = username || 'La Fleur';
     if(username.length > 20) username = username.substring(0, 19);
     localStorage.setItem('username', username);
     Razor.client = new Client(username);
+
+    var text = "Use arrow to move\nUse spacebar to blast\n4s cooldown your blast\nRed froggy gives you health\nYellow froggy gives you speed"
+    Razor.note = Razor.game.add.text(10, 10, '', {
+        font: 'bold 11pt Arial',
+        fill : 'white',
+        stroke : 'black',
+        strokeThickness : 3
+      });
+
+    Razor.note.setText(text);
+    Razor.note.fixedToCamera = true;
 
 }
 //=Update ======================================================================
