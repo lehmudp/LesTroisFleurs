@@ -11,6 +11,7 @@ class Client{
       that.id = msg.id;
     });
 
+
     this.socket.on('other_players', function(msg){
       Razor.onReceivedOtherPlayersData(msg);
     });

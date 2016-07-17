@@ -7,7 +7,8 @@ class Player{
     this.sprite.health = 100;
     this.sprite.id = id;
     this.sprite.name = name;
-    this.sprite.damage = damage;
+    this.sprite.playerVelocity = 500;
+    this.sprite.damage = 1;
     this.sprite.arrayTextHealth = [];
     var text = new Phaser.Text(this.sprite.game, 0, -25, name, {
       font: 'bold 11pt Arial',
@@ -27,20 +28,20 @@ class Player{
 
   update(directionX, directionY, health){
     if(directionX < 0){
-      this.sprite.body.velocity.x = -800;
+      this.sprite.body.velocity.x = -this.sprite.playerVelocity;
       this.sprite.animations.play('left');
     }
     else if (directionX > 0){
-      this.sprite.body.velocity.x = 800;
+      this.sprite.body.velocity.x = this.sprite.playerVelocity;
       this.sprite.animations.play('right');
     }
 
     else if(directionY < 0){
-      this.sprite.body.velocity.y = -800;
+      this.sprite.body.velocity.y = -this.sprite.playerVelocity;
       this.sprite.animations.play('up');
     }
     else if (directionY > 0){
-      this.sprite.body.velocity.y = 800;
+      this.sprite.body.velocity.y = this.sprite.playerVelocity;
       this.sprite.animations.play('down');
     }
     else{

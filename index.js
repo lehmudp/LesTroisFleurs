@@ -34,7 +34,7 @@ io.on('connection', function(socket){//when a new user connect
     username : data,
     id : socket.id,
     x : 35,
-    y : 2626,
+    y : 26,
   };
 
   socket.on('disconnect', function(msg){

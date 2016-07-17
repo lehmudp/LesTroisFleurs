@@ -11,8 +11,8 @@ indexBlast = -1;
 radiuses = [];
 Razor.nextShotAt = 0;
 Razor.shotDelay = 4000;
-Razor.nextShotItem = 0;
-Razor.itemDelayTime = 2000;
+Razor.nextItem = 0;
+Razor.itemDelayTime = 5000;
 Razor.blasts = [];
 count = 0;
 bornInOneTurn = 0;
@@ -41,6 +41,10 @@ var preload = function(){
     Razor.game.load.spritesheet('player', 'assets/lspsprite.png', 40, 47);
     Razor.game.load.image('blast', 'assets/blast.png');
     Razor.game.load.image('tp', 'assets/warpzone.png');
+    Razor.game.load.audio('blastSound', ['assets/razorSound.mp3', 'assets/razorSound.ogg']);
+    Razor.game.load.spritesheet('health', 'assets/health.png', 28, 100);
+    Razor.game.load.spritesheet('speed', 'assets/speed.png', 28, 100);
+    Razor.game.load.spritesheet('damage', 'assets/damage.png', 28, 100);
   }
 
 //=Create ======================================================================
@@ -68,6 +72,7 @@ var create = function(){
     //TELEPORT - create portal
     timewarp = Razor.timewarpGroup.create(948, 2272, 'tp');
     Razor.game.physics.arcade.enable(timewarp);
+    Razor.music = Razor.game.add.audio('blastSound');
 
     var username = prompt("Sau khi đăng nhập bạn sẽ an toàn trong vùng Friendzone. Hãy thoát ngay ra và cân cả bản đồ. Good Luck! Nhấn SpaceBar để chưởng, sau 4s bạn mới chưởng được phát nữa.",
     localStorage.getItem('username') || 'La Fleur');
@@ -75,6 +80,7 @@ var create = function(){
     if(username.length > 20) username = username.substring(0, 19);
     localStorage.setItem('username', username);
     Razor.client = new Client(username);
+
 }
 //=Update ======================================================================
 var update = function(){
@@ -99,21 +105,37 @@ var update = function(){
     this
   );
 
+  createItem();
+
 }
 
 var onDiamond = function(playerSprite, itemSprite){
+  if (itemSprite.key == itemHealth.sprite.key && player.sprite.health <= 100){
+    player.sprite.health += 20;
+    if (player.sprite.health > 100){player.sprite.health = 100}
+  }
+  else if (itemSprite.key == itemSpeed.sprite.key && player.sprite.playerVelocity < 800){
+    player.sprite.playerVelocity += 20;
+  };
+
   itemSprite.kill();
 }
 
 var createItem = function(){
-  if (Razor.nextShotItem > Razor.game.time.now){
+  if (Razor.nextItem > Razor.game.time.now){
     return;
   }
-  Razor.nextShotItem = Razor.game.time.now + Razor.itemDelayTime;
-  if (count < 50){
-    item = new Item(Math.random()*500, Math.random()*500);
-    item.sprite.lifespan = 2000;
-    count += 1;
+  Razor.nextItem = Razor.game.time.now + Razor.itemDelayTime;
+  for (count = 0; count < 8; count ++){
+    itemHealth = new Item(Math.random()*3200, Math.random()*3200, 'health');
+    itemHealth.sprite.lifespan = 3000;
+    count += 1
+  };
+
+  for (count = 0; count < 9; count ++){
+    itemSpeed = new Item(Math.random()*3200, Math.random()*3200, 'speed');
+    itemSpeed.sprite.lifespan = 3000;
+    count += 1
   };
 }
 
@@ -135,16 +157,7 @@ Razor.onPlayerDisconnected = function(msg){
  enemy.sprite.destroy();
 }
 
-/*
- *  HELPER FUNCTIONS
 
-Razor.getPlayerById = function(id){
-  for(var i=0;i<Razor.enemies.length;i++){
-    if(Razor.enemies[i].sprite.id == id){
-      return Razor.enemies[i];
-    }
-  }
-} */
 /*
 * GAME EVENTS
 */
@@ -228,6 +241,7 @@ Razor.createBlast = function(positionX, positionY, radius, group, id){
 
 Razor.fire = function(player){
   if (Razor.keyboard.isDown(Phaser.KeyCode.SPACEBAR)){
+
     if (Razor.blasts.length == 0){
 
       if (Razor.nextShotAt > Razor.game.time.now){
@@ -236,10 +250,10 @@ Razor.fire = function(player){
       Razor.nextShotAt = Razor.game.time.now + Razor.shotDelay;
       //add blast
       if((player.sprite.x < 1149 && player.sprite.y > 2295) == false){
+        Razor.music.play();
         Razor.blast = new Blast(player.sprite.x, player.sprite.y, radius, Razor.blastGroup, player.sprite.id)
         Razor.blasts.push(Razor.blast.sprite);
         Razor.client.reportBlast(player.sprite.id, player.sprite.position, radius);
-        console.log(player.sprite.x, player.sprite.y);
         radiuses.push(radius);
         indexBlast += 1;
         radius += radiusAdd;
