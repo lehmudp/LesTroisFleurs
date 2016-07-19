@@ -82,7 +82,7 @@ var create = function(){
     localStorage.setItem('username', username);
     Razor.client = new Client(username);
 
-    var text = "Use arrow to move\nUse spacebar to blast\n4s cooldown your blast\nRed froggy gives you health\nYellow froggy gives you speed"
+    var text = "Use arrow to move\nUse spacebar to blast\n4s cooldown your blast\nRed froggy gives you health\nYellow froggy gives you speed\nRa khỏi vùng xuất phát để bắn\nDùng phím mũi tên để di chuyển\nDùng SpaceBar để bắn\nẾch đỏ giúp tăng máu\nẾch vàng giúp tăng tốc"
     Razor.note = Razor.game.add.text(10, 10, '', {
         font: 'bold 11pt Arial',
         fill : 'white',
