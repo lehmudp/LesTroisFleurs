@@ -9,8 +9,8 @@ app.get('/', function(req, res){
   res.sendFile(__dirname + 'index.html');
 });
 
-http.listen(3333, function(){
-  console.log('Server started. Listening on *:3333');
+http.listen(process.env.PORT, function(){
+  console.log('Server started.');
 });
 
 //==Working Space ==============================================================
